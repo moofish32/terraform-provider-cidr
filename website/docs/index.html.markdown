@@ -1,58 +1,14 @@
 ---
-layout: "template"
-page_title: "Provider: Template"
-sidebar_current: "docs-template-index"
+layout: "cidr"
+page_title: "Provider: CIDR"
+sidebar_current: "docs-cidr-index"
 description: |-
-  The Template provider is used to template strings for other Terraform resources.
+  The CIDR Provider is used to construct networks using CIDR notation.
 ---
 
-# Template Provider
+# CIDR Provider
 
-The template provider exposes data sources to use templates to generate
-strings for other Terraform resources or outputs.
+The CIDR provider exposes data sources to define networks using [CIDR](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing). 
 
 Use the navigation to the left to read about the available data sources.
-
-## Example Usage
-
-```hcl
-# Template for initial configuration bash script
-data "template_file" "init" {
-  template = "${file("init.tpl")}"
-
-  vars {
-    consul_address = "${aws_instance.consul.private_ip}"
-  }
-}
-
-# Create a web server
-resource "aws_instance" "web" {
-  # ...
-
-  user_data = "${data.template_file.init.rendered}"
-}
-```
-
-Or using an inline template:
-
-```hcl
-# Template for initial configuration bash script
-data "template_file" "init" {
-  template = "$${consul_address}:1234"
-
-  vars {
-    consul_address = "${aws_instance.consul.private_ip}"
-  }
-}
-
-# Create a web server
-resource "aws_instance" "web" {
-  # ...
-
-  user_data = "${data.template_file.init.rendered}"
-}
-```
-
--> **Note:** Inline templates must escape their interpolations (as seen
-by the double `$` above). Unescaped interpolations will be processed
-_before_ the template.
+before_ the template.

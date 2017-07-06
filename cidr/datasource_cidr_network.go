@@ -7,6 +7,7 @@ import (
 	"net"
 	"strconv"
 
+	goc "github.com/apparentlymart/go-cidr/cidr"
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
@@ -62,14 +63,14 @@ func dataSourceNetworkRead(d *schema.ResourceData, meta interface{}) error {
 	}
 	d.SetId(hashID(cBlock, subnetMasks))
 
-	currentSubnet, _ := PreviousSubnet(startNet, subnetMasks[0].Mask)
+	currentSubnet, _ := goc.PreviousSubnet(startNet, subnetMasks[0].Mask)
 	subnetCIDRs, subnets, err := calculateSubnets(currentSubnet, subnetMasks)
 	if err != nil {
 		return fmt.Errorf("Error [ %v ] calculating subnets for cidr_network\n", err)
 	}
 	masterCIDRList = subnets
 	d.Set("subnet_cidrs", subnetCIDRs)
-	networkErr := VerifyNetwork(masterCIDRList, startNet)
+	networkErr := goc.VerifyNoOverlap(masterCIDRList, startNet)
 	if networkErr != nil {
 		return networkErr
 	}
@@ -82,7 +83,7 @@ func calculateSubnets(currentSubnet *net.IPNet,
 	subnetCIDRs := make(map[string]string)
 	subnets := make([]*net.IPNet, len(subnetMasks))
 	for i, s := range subnetMasks {
-		tmpSubnet, rollover := NextSubnet(currentSubnet, s.Mask)
+		tmpSubnet, rollover := goc.NextSubnet(currentSubnet, s.Mask)
 		if rollover {
 			return nil, nil, fmt.Errorf("Next from %s exceeded maximum value\n", currentSubnet.String())
 		}

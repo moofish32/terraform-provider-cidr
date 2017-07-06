@@ -18,10 +18,8 @@ var testAccAwsProvider *schema.Provider
 
 func init() {
 	testAccProvider = Provider().(*schema.Provider)
-	// testAccAwsProvider = aws.Provider().(*schema.Provider)
 	testAccProviders = map[string]terraform.ResourceProvider{
 		"cidr": testAccProvider,
-		// "aws":  testAccAwsProvider,
 	}
 }
 

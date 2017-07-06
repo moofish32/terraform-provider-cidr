@@ -9,20 +9,6 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-func TestAccCIDRNetwork(t *testing.T) {
-	r.Test(t, r.TestCase{
-		Providers: testAccProviders,
-		Steps: []r.TestStep{
-			{
-				Config: awsVPC,
-				Check: r.ComposeTestCheckFunc(
-					outputCheckNetwork,
-				),
-			},
-		},
-	})
-}
-
 func TestCidrNetwork(t *testing.T) {
 	r.UnitTest(t, r.TestCase{
 		Providers: testProviders,
@@ -259,83 +245,4 @@ data "cidr_network" "order" {
 		name = "elb_az2" 
 	}
 }
-`
-
-const awsVPC = `
-variable	"cidr_block" { default = "192.168.0.0/21" } 
-
-data "aws_availability_zones" "available" {}
-
-data "cidr_network" "cake" {
-	cidr_block = "${var.cidr_block}"
-	subnet {
-		mask = 24
-		name = "private_az1" 
-	}
-	subnet {
-		mask = 24
-		name = "private_az2" 
-	}
-	subnet {
-		mask = 24
-		name = "private_az3" 
-	}
-	subnet {
-		mask = 25
-		name = "public_az1"
-	} 
-	subnet {
-		mask = 25
-		name = "public_az2"
-	} 
-	subnet {
-		mask = 25
-		name = "public_az3"
-	} 
-	subnet {
-		mask = 28
-		name = "elb_az1" 
-	}
-	subnet {
-		mask = 28
-		name = "elb_az2" 
-	}
-	subnet {
-		mask = 28
-		name = "elb_az3" 
-	}
-}
-
-resource "aws_vpc" "main" {
-	cidr_block           = "${var.cidr_block}"
-	enable_dns_hostnames = true
-	enable_dns_support   = true
-}
-resource "aws_subnet" "public_subnets" {
-	vpc_id            = "${aws_vpc.main.id}"
-	count              = "${length(data.aws_availability_zones.available.names)}"
-	cidr_block        = "${data.cidr_network.cake.subnet_cidrs["public_az${count.index + 1}"]}"
-	availability_zone = "${data.aws_availability_zones.available.names[count.index]}"
-}
-resource "aws_subnet" "private_subnets" {
-	vpc_id            = "${aws_vpc.main.id}"
-	count              = "${length(data.aws_availability_zones.available.names)}"
-	cidr_block        = "${data.cidr_network.cake.subnet_cidrs["private_az${count.index + 1}"]}"
-	availability_zone = "${data.aws_availability_zones.available.names[count.index]}"
-}
-resource "aws_subnet" "elb_subnets" {
-	vpc_id            = "${aws_vpc.main.id}"
-	count              = "${length(data.aws_availability_zones.available.names)}"
-	cidr_block        = "${data.cidr_network.cake.subnet_cidrs["elb_az${count.index + 1}"]}"
-	availability_zone = "${data.aws_availability_zones.available.names[count.index]}"
-}
-output "public_subnet1"  { value = "${aws_subnet.public_subnets.0.cidr_block}" }
-output "public_subnet2"  { value = "${aws_subnet.public_subnets.1.cidr_block}" }
-output "public_subnet3"  { value = "${aws_subnet.public_subnets.2.cidr_block}" }
-output "private_subnet1"  { value = "${aws_subnet.private_subnets.0.cidr_block}" }
-output "private_subnet2"  { value = "${aws_subnet.private_subnets.1.cidr_block}" }
-output "private_subnet3"  { value = "${aws_subnet.private_subnets.2.cidr_block}" }
-output "elb_subnet1"  { value = "${aws_subnet.elb_subnets.0.cidr_block}" }
-output "elb_subnet2"  { value = "${aws_subnet.elb_subnets.1.cidr_block}" }
-output "elb_subnet3"  { value = "${aws_subnet.elb_subnets.2.cidr_block}" }
 `
