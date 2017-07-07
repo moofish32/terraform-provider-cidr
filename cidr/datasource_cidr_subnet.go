@@ -42,7 +42,7 @@ func dataSourceSubnet() *schema.Resource {
 				Computed: true,
 			},
 			"subnet_cidrs": &schema.Schema{
-				Type:        schema.TypeSet,
+				Type:        schema.TypeList,
 				Description: "The set of subnets in CIDR notation",
 				Optional:    true,
 				Computed:    true,
@@ -88,6 +88,7 @@ func dataSourceSubnetRead(d *schema.ResourceData, meta interface{}) error {
 	if nerr != nil {
 		return fmt.Errorf("Network is invalid: [ %v ]", nerr)
 	}
+
 	d.Set("subnet_cidrs", subnetCIDRs)
 	d.Set("max_subnet", subnetCIDRs[subnetCount-1])
 	return nil

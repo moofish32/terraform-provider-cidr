@@ -14,39 +14,63 @@ func TestCidrSubnet(t *testing.T) {
 		Steps: []r.TestStep{
 			r.TestStep{
 				Config: subnets,
-				Check: r.ComposeTestCheckFunc(
-					r.TestCheckResourceAttr("data.cidr_subnet.public", "subnet_cidrs.#", "1"),
-					r.TestCheckResourceAttr("data.cidr_subnet.public", "max_subnet",
-						"10.0.3.0/25"),
-					r.TestCheckResourceAttr("data.cidr_subnet.private", "subnet_cidrs.#", "3"),
-					r.TestCheckResourceAttr("data.cidr_subnet.private", "max_subnet",
-						"10.0.2.0/24"),
-					r.TestCheckResourceAttr("data.cidr_subnet.elb", "max_subnet",
-						"10.0.3.128/28"),
-				),
+				Check:  r.ComposeTestCheckFunc(efficientSubnetCheck),
+			},
+		},
+	},
+	)
+}
+func TestCidrSubnetWaste(t *testing.T) {
+	r.UnitTest(t, r.TestCase{
+		Providers: testProviders,
+		Steps: []r.TestStep{
+			r.TestStep{
+				Config: wasteOfSpace,
+				Check:  r.ComposeTestCheckFunc(wastedSubnetCheck),
 			},
 		},
 	},
 	)
 }
 
-func outputCheck(s *terraform.State) error {
+func wastedSubnetCheck(s *terraform.State) error {
+	answers := [][]string{
+		[]string{"private_subnet1", "192.168.0.0/28"},
+		[]string{"private_subnet2", "192.168.0.16/28"},
+		[]string{"private_subnet3", "192.168.0.32/28"},
+		[]string{"private_max", "192.168.0.32/28"},
+		[]string{"public_subnet1", "192.168.0.128/25"},
+		[]string{"public_subnet2", "192.168.1.0/25"},
+		[]string{"public_max", "192.168.1.0/25"},
+		[]string{"elb_subnet1", "192.168.4.0/22"},
+		[]string{"elb_max", "192.168.4.0/22"},
+	}
+	return checkAnswers(answers, s.RootModule().Outputs)
+}
+
+func efficientSubnetCheck(s *terraform.State) error {
 	answers := [][]string{
 		[]string{"private_subnet1", "192.168.0.0/24"},
 		[]string{"private_subnet2", "192.168.1.0/24"},
 		[]string{"private_subnet3", "192.168.2.0/24"},
+		[]string{"private_max", "192.168.2.0/24"},
 		[]string{"public_subnet1", "192.168.3.0/25"},
 		[]string{"public_subnet2", "192.168.3.128/25"},
 		[]string{"public_subnet3", "192.168.4.0/25"},
-		// the order won't change but this one proves sorting is not in your control
-		[]string{"elb_subnet2", "192.168.4.128/28"},
-		[]string{"elb_subnet3", "192.168.4.144/28"},
-		[]string{"elb_subnet1", "192.168.4.160/28"},
+		[]string{"public_max", "192.168.4.0/25"},
+		[]string{"elb_subnet1", "192.168.4.128/28"},
+		[]string{"elb_subnet2", "192.168.4.144/28"},
+		[]string{"elb_subnet3", "192.168.4.160/28"},
+		[]string{"elb_max", "192.168.4.160/28"},
 	}
-	for _, ans := range answers {
-		got := s.RootModule().Outputs[ans[0]]
+	return checkAnswers(answers, s.RootModule().Outputs)
+}
+
+func checkAnswers(expected [][]string, actual map[string]*terraform.OutputState) error {
+	for _, ans := range expected {
+		got := actual[ans[0]]
 		if ans[1] != got.Value {
-			fmt.Printf("Outputs %v\n", s.RootModule().Outputs)
+			fmt.Printf("Outputs %v\n", actual)
 			return fmt.Errorf("Output expected %s, got %s\n", ans[1], got.Value)
 		}
 	}
@@ -55,20 +79,67 @@ func outputCheck(s *terraform.State) error {
 
 const subnets = `
 data "cidr_subnet" "private" {
-	cidr_block = "10.0.0.0/21"
+	cidr_block = "192.168.0.0/21"
 	subnet_mask = 24 
 	subnet_count = 3
 }
 
 data "cidr_subnet" "public" {
-	cidr_block = "10.0.0.0/21"
+	cidr_block = "192.168.0.0/21"
 	subnet_mask = 25
+	subnet_count = 3
 	start_after = "${data.cidr_subnet.private.max_subnet}"
 }
 
 data "cidr_subnet" "elb" {
-	cidr_block = "10.0.0.0/21"
+	cidr_block = "192.168.0.0/21"
 	subnet_mask = 28
+	subnet_count = 3
 	start_after = "${data.cidr_subnet.public.max_subnet}"
 }
+
+output "public_subnet1"  { value = "${data.cidr_subnet.public.subnet_cidrs[0]}" }
+output "public_subnet2"  { value = "${data.cidr_subnet.public.subnet_cidrs[1]}" }
+output "public_subnet3"  { value = "${data.cidr_subnet.public.subnet_cidrs[2]}" }
+output "public_max"      { value = "${data.cidr_subnet.public.max_subnet}" }
+output "private_subnet1" { value = "${data.cidr_subnet.private.subnet_cidrs[0]}" }
+output "private_subnet2" { value = "${data.cidr_subnet.private.subnet_cidrs[1]}" }
+output "private_subnet3" { value = "${data.cidr_subnet.private.subnet_cidrs[2]}" }
+output "private_max"     { value = "${data.cidr_subnet.private.max_subnet}" }
+output "elb_subnet1"     { value = "${data.cidr_subnet.elb.subnet_cidrs[0]}" }
+output "elb_subnet2"     { value = "${data.cidr_subnet.elb.subnet_cidrs[1]}" }
+output "elb_subnet3"     { value = "${data.cidr_subnet.elb.subnet_cidrs[2]}" }
+output "elb_max"         { value = "${data.cidr_subnet.elb.max_subnet}" }
+`
+
+const wasteOfSpace = `
+data "cidr_subnet" "private" {
+	cidr_block = "192.168.0.0/21"
+	subnet_mask = 28 
+	subnet_count = 3
+}
+
+data "cidr_subnet" "public" {
+	cidr_block = "192.168.0.0/21"
+	subnet_mask = 25
+	subnet_count = 2
+	start_after = "${data.cidr_subnet.private.max_subnet}"
+}
+
+data "cidr_subnet" "elb" {
+	cidr_block = "192.168.0.0/21"
+	subnet_mask = 22
+	start_after = "${data.cidr_subnet.public.max_subnet}"
+}
+
+output "public_subnet1"  { value = "${data.cidr_subnet.public.subnet_cidrs[0]}" }
+output "public_subnet2"  { value = "${data.cidr_subnet.public.subnet_cidrs[1]}" }
+output "public_subnet3"  { value = "${data.cidr_subnet.public.subnet_cidrs[2]}" }
+output "public_max"      { value = "${data.cidr_subnet.public.max_subnet}" }
+output "private_subnet1" { value = "${data.cidr_subnet.private.subnet_cidrs[0]}" }
+output "private_subnet2" { value = "${data.cidr_subnet.private.subnet_cidrs[1]}" }
+output "private_subnet3" { value = "${data.cidr_subnet.private.subnet_cidrs[2]}" }
+output "private_max"     { value = "${data.cidr_subnet.private.max_subnet}" }
+output "elb_subnet1"     { value = "${data.cidr_subnet.elb.subnet_cidrs[0]}" }
+output "elb_max"         { value = "${data.cidr_subnet.elb.max_subnet}" }
 `
