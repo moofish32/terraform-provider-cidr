@@ -17,7 +17,7 @@ func dataSourceSubnet() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"cidr_block": &schema.Schema{
 				Type:        schema.TypeString,
-				Description: "The CIDR Block for the entire network (aka supernet)",
+				Description: "The CIDR block for the entire network (aka supernet)",
 				Required:    true,
 			},
 			"start_after": &schema.Schema{
@@ -33,7 +33,7 @@ func dataSourceSubnet() *schema.Resource {
 			},
 			"subnet_mask": &schema.Schema{
 				Type:        schema.TypeInt,
-				Description: "The deisred subnet mask to use for creation",
+				Description: "The desired subnet mask to use for creation",
 				Required:    true,
 			},
 			"max_subnet": &schema.Schema{
@@ -69,7 +69,7 @@ func dataSourceSubnetRead(d *schema.ResourceData, meta interface{}) error {
 	if sap {
 		_, offsetSubnet, perr := net.ParseCIDR(startAfter.(string))
 		if perr != nil {
-			return fmt.Errorf("start_after %v resulted in pasre error %v\n", startAfter, perr)
+			return fmt.Errorf("start_after %v resulted in parse error %v\n", startAfter, perr)
 		}
 		currentSubnet = offsetSubnet
 	} else {

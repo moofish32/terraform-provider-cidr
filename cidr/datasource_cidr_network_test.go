@@ -144,7 +144,7 @@ func TestCalculateSubnets(t *testing.T) {
 		}
 		_, _, fail := calculateSubnets(IPNet, tc.SubnetMasks)
 		if fail == nil {
-			t.Errorf("calculateSubnets shoudl have failed starting at %s\n", tc.CurrentSubnet)
+			t.Errorf("calculateSubnets should have failed starting at %s\n", tc.CurrentSubnet)
 		}
 	}
 	for _, tc := range testCases {
@@ -154,11 +154,11 @@ func TestCalculateSubnets(t *testing.T) {
 		}
 		cByName, _, err := calculateSubnets(IPNet, tc.SubnetMasks)
 		if err != nil {
-			t.Errorf("failed calculateSubnets with %v\n", err)
+			t.Errorf("calculateSubnets with failed %v\n", err)
 		}
 		for name, got := range cByName {
 			if got != tc.CIDRByName[name] {
-				t.Errorf("Got %v, Expected %v\n", got, tc.CIDRByName[name])
+				t.Errorf("Got %v, expected %v\n", got, tc.CIDRByName[name])
 			}
 		}
 	}

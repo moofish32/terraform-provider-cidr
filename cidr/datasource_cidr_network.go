@@ -59,7 +59,7 @@ func dataSourceNetworkRead(d *schema.ResourceData, meta interface{}) error {
 	cBlock := d.Get("cidr_block").(string)
 	_, startNet, err := net.ParseCIDR(cBlock)
 	if err != nil {
-		return fmt.Errorf("Error pasring CIDR %v for cidr_network\n", err)
+		return fmt.Errorf("Error parsing CIDR %v for cidr_network\n", err)
 	}
 	d.SetId(hashID(cBlock, subnetMasks))
 
