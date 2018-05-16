@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/hashicorp/terraform/plugin"
-	"github.com/terraform-providers/terraform-provider-cidr/cidr"
+	"github.com/moofish32/terraform-provider-cidr/cidr"
 )
 
 func main() {
