@@ -134,7 +134,6 @@ data "cidr_subnet" "elb" {
 
 output "public_subnet1"  { value = "${data.cidr_subnet.public.subnet_cidrs[0]}" }
 output "public_subnet2"  { value = "${data.cidr_subnet.public.subnet_cidrs[1]}" }
-output "public_subnet3"  { value = "${data.cidr_subnet.public.subnet_cidrs[2]}" }
 output "public_max"      { value = "${data.cidr_subnet.public.max_subnet}" }
 output "private_subnet1" { value = "${data.cidr_subnet.private.subnet_cidrs[0]}" }
 output "private_subnet2" { value = "${data.cidr_subnet.private.subnet_cidrs[1]}" }
