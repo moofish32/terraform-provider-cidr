@@ -1,5 +1,6 @@
 Terraform Provider
 ==================
+[![Build Status](https://travis-ci.com/moofish32/terraform-provider-cidr.svg?branch=master)](https://travis-ci.com/moofish32/terraform-provider-cidr)
 
 - Website: https://www.terraform.io
 - [![Gitter chat](https://badges.gitter.im/hashicorp-terraform/Lobby.png)](https://gitter.im/hashicorp-terraform/Lobby)
@@ -10,8 +11,8 @@ Terraform Provider
 Requirements
 ------------
 
--	[Terraform](https://www.terraform.io/downloads.html) 0.10.x
--	[Go](https://golang.org/doc/install) 1.8 (to build the provider plugin)
+-	[Terraform](https://www.terraform.io/downloads.html) 0.11.x
+-	[Go](https://golang.org/doc/install) 1.9 (to build the provider plugin)
 
 Building The Provider
 ---------------------
