@@ -38,7 +38,7 @@ branches:
   - master
 matrix:
   include:
-  - go: 1.10
+  - go: '1.10.x'
     env: TESTARGS=-coverprofile c.out
   fast_finish: true
   allow_failures:
