@@ -1,9 +1,6 @@
 dist: trusty
 sudo: false
 language: go
-go:
-- '1.9.x'
-- '1.10.x'
 
 env:
   global:
@@ -39,6 +36,7 @@ branches:
   - master
 matrix:
   include:
+  - go: '1.9.x'
   - go: '1.10.x'
     env: 'TESTARGS="-coverprofile c.out"'
   fast_finish: true
