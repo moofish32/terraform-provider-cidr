@@ -2,8 +2,8 @@ dist: trusty
 sudo: false
 language: go
 go:
-- 1.9.1
-- 1.10.2
+- 1.9
+- 1.10
 
 env:
   - DEP_VERSION="0.4.1"
@@ -37,6 +37,9 @@ branches:
   only:
   - master
 matrix:
+  include:
+  - go: 1.10
+    env: TESTARGS=-coverprofile c.out
   fast_finish: true
   allow_failures:
   - go: tip

@@ -1,5 +1,4 @@
 TEST?=$$(go list ./... |grep -v 'vendor')
-TESTARGS?=-coverprofile c.out
 GOFMT_FILES?=$$(find . -name '*.go' |grep -v vendor)
 
 default: build
