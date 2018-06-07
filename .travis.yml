@@ -18,13 +18,20 @@ install:
 # packages that live there.
 # See: https://github.com/golang/go/issues/12933
 - bash scripts/gogetcookie.sh  
+- go get -v github.com/codeclimate/test-reporter
 - dep ensure
+
+before_script:
+  - test-reporter before-build
 
 script:
 - make test
 - make testacc
 - make dep-status
 - make vet
+
+after_script:
+  - test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 
 branches:
   only:
