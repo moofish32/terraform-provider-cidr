@@ -1,7 +1,8 @@
 Terraform Provider
 ==================
 [![Build Status](https://travis-ci.com/moofish32/terraform-provider-cidr.svg?branch=master)](https://travis-ci.com/moofish32/terraform-provider-cidr)
-
+[![Test Coverage](https://api.codeclimate.com/v1/badges/78c89d99d59df51cc9b1/test_coverage)](https://codeclimate.com/github/moofish32/terraform-provider-cidr/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/78c89d99d59df51cc9b1/maintainability)](https://codeclimate.com/github/moofish32/terraform-provider-cidr/maintainability)
 - Website: https://www.terraform.io
 - [![Gitter chat](https://badges.gitter.im/hashicorp-terraform/Lobby.png)](https://gitter.im/hashicorp-terraform/Lobby)
 - Mailing list: [Google Groups](http://groups.google.com/group/terraform-tool)
