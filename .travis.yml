@@ -17,16 +17,15 @@ install:
 # See: https://github.com/golang/go/issues/12933
 - bash scripts/gogetcookie.sh  
 - go get -v github.com/codeclimate/test-reporter
-- dep ensure
 
 before_script:
   - test-reporter before-build
 
 script:
+- make vet
 - make test
 - make testacc
-- make dep-status
-- make vet
+- make vendor
 
 after_script:
   - test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
@@ -36,8 +35,8 @@ branches:
   - master
 matrix:
   include:
-  - go: '1.9.x'
-  - go: '1.10.x'
+  - go: '1.11.x'
+  - go: '1.12.x'
     env: 'TESTARGS="-coverprofile c.out"'
   fast_finish: true
   allow_failures:

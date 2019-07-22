@@ -1,6 +1,9 @@
 TEST?=$$(go list ./... |grep -v 'vendor')
 GOFMT_FILES?=$$(find . -name '*.go' |grep -v vendor)
 
+# Enable Go Module
+export GO111MODULE=on
+
 default: build
 
 build: fmtcheck
@@ -23,6 +26,10 @@ vet:
 		exit 1; \
 	fi
 
+vendor: 
+	go mod tidy
+	go mod vendor
+	
 fmt:
 	gofmt -w $(GOFMT_FILES)
 
@@ -31,9 +38,6 @@ fmtcheck:
 
 errcheck:
 	@sh -c "'$(CURDIR)/scripts/errcheck.sh'"
-
-dep-status:
-	@dep status
 
 test-compile:
 	@if [ "$(TEST)" = "./..." ]; then \
