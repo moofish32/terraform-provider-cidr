@@ -7,13 +7,11 @@ Terraform Provider
 - [![Gitter chat](https://badges.gitter.im/hashicorp-terraform/Lobby.png)](https://gitter.im/hashicorp-terraform/Lobby)
 - Mailing list: [Google Groups](http://groups.google.com/group/terraform-tool)
 
-![Terraform](https://rawgithub.com/hashicorp/terraform/master/website/source/assets/images/logo-hashicorp.svg)
-
 Requirements
 ------------
 
--	[Terraform](https://www.terraform.io/downloads.html) 0.11.x
--	[Go](https://golang.org/doc/install) 1.9 (to build the provider plugin)
+-	[Terraform](https://www.terraform.io/downloads.html) 0.12.x
+-	[Go](https://golang.org/doc/install) 1.11 or higher (to build the provider plugin)
 
 Building The Provider
 ---------------------
@@ -34,7 +32,29 @@ $ make build
 
 Using the provider
 ----------------------
-## Fill in for each provider
+```hcl
+data "cidr_network" "order" {
+	cidr_block = "10.0.0.0/21"
+	subnet {
+		mask = 28
+		name = "private_az1" 
+	}
+	subnet {
+		mask = 24
+		name = "private_az2" 
+	}
+	subnet {
+		mask = 28
+		name = "elb_az1" 
+	}
+	subnet {
+		mask = 27
+		name = "elb_az2" 
+	}
+}
+
+// then later use the outputs 
+```
 
 Developing the Provider
 ---------------------------
